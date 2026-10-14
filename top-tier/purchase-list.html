@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JNPSD AI Cluster Purchase List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+  :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .head { padding-block: 40px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .head h1 { font-size: clamp(44px, 7vw, 80px); }
+  .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 8px; }
+  .stat { border-top: 3px solid var(--ink); padding-top: 10px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .stat .v { font-family: var(--f-display); font-weight: 800; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 14px; color: var(--ink-2); }
+  @media (max-width: 760px) { .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .alert { display: grid; grid-template-columns: 6px minmax(0, 1fr); gap: 14px; background: var(--warn-soft); color: var(--ink); border-radius: 8px; padding: 14px 16px 14px 0; overflow: hidden; }
+  .alert::before { content: ''; background: var(--warn); }
+  .alert p { max-width: none; font-size: 15px; }
+
+  .toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+  .toolbar .msg { font-size: 14px; color: var(--ink-2); }
+
+  .group { padding-block: 32px; border-top: 1px solid var(--rule); }
+  .group-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .group-head h2 { font-size: clamp(30px, 4.5vw, 44px); }
+  .group-head p { color: var(--ink-2); font-size: 15px; margin-top: 6px; }
+  .mult { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; background: var(--teal-soft); color: var(--teal); padding: 6px 10px; border-radius: 3px; white-space: nowrap; }
+
+  table.parts { min-width: 760px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+  table.parts td { font-size: 15px; }
+  table.parts tr:last-child td { border-bottom: none; }
+  .item-name { font-weight: 600; }
+  .item-sub { font-size: 13px; color: var(--ink-2); margin-top: 3px; }
+  .item-changed { font-size: 13px; color: var(--warn); margin-top: 3px; font-weight: 600; }
+  .buy { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; }
+  .subtotal td { background: var(--teal-soft); font-weight: 700; }
+
+  .totals { margin-top: 8px; max-width: 520px; }
+  .totals tr.total td { font-size: 17px; }
+
+  .alts { display: flex; flex-direction: column; gap: 12px; }
+  .alt { border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); padding: 14px 16px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
+  .alt > div { min-width: 0; flex: 1 1 360px; }
+  .notes { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: var(--ink-2); font-size: 15px; max-width: 80ch; }
+  .back { font-size: 14px; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html">JNPSD · AI cluster proposal</a>
+    <nav class="nav" aria-label="Pages">
+      <a href="../">← All options</a>
+      <a href="index.html">Proposal</a>
+      <a href="index.html#video">Video</a>
+      <a class="cta-link" href="#top" aria-current="page">Purchase list</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <div class="head">
+    <a class="back" href="index.html">← Back to the proposal</a>
+    <div class="eyebrow" id="checked">Prices and availability checked</div>
+    <h1>Purchase list</h1>
+    <p class="lede">Every part for the three servers, with quantities, current prices and a link to the exact listing. All parts are new.</p>
+    <div class="summary" id="summary"></div>
+  </div>
+
+  <div class="alert" role="note"><p id="alert-text"></p></div>
+
+  <div class="toolbar" style="margin-top: 18px">
+    <button class="btn btn-ghost" id="copy-btn" type="button">Copy list as text</button>
+    <span class="msg" id="copy-msg" aria-live="polite"></span>
+  </div>
+  <textarea id="copy-fallback" aria-label="Purchase list as text" readonly hidden style="width: 100%; min-height: 220px; margin-top: 12px; font-family: var(--f-mono); font-size: 12px; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); border-radius: 6px; padding: 10px"></textarea>
+
+  <div id="groups"></div>
+
+  <section class="group" aria-labelledby="totals-h">
+    <div class="group-head"><div><h2 id="totals-h">Totals</h2><p>Hardware at today's prices, and how the request covers it.</p></div></div>
+    <div class="table-scroll"><table class="totals"><tbody id="totals"></tbody></table></div>
+  </section>
+
+  <section class="group" aria-labelledby="alts-h">
+    <div class="group-head"><div><h2 id="alts-h">Backup sources</h2><p>Use these only if a primary seller can't deliver in time.</p></div></div>
+    <div class="alts" id="alts"></div>
+  </section>
+
+  <div id="option"></div>
+
+  <section class="group" aria-labelledby="notes-h">
+    <div class="group-head"><div><h2 id="notes-h">Before you order</h2></div></div>
+    <ul class="notes">
+      <li>Order the two Saitech parts first (server boards and EPYC processors). They are special order, and the build can't start without them.</li>
+      <li>Newegg pages show an Add to cart button but don't publish stock counts. "Add to cart" below means the listing was orderable when checked, not a guaranteed quantity.</li>
+      <li>Several parts are sold by marketplace sellers on Newegg. Make sure the seller in the cart matches the seller listed here.</li>
+      <li>Prices exclude sales tax. Shipping is included only where the item notes say so.</li>
+      <li>Prices change daily, especially memory and storage. Re-check each link on the day you order.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span>Prepared by Mike Vincent, Instructional Technology &amp; CTE Coordinator · JNPSD</span>
+    <a href="index.html">Back to the proposal</a>
+  </div>
+</footer>
+
+<script src="parts.js"></script>
+<script>
+(function () {
+  const P = window.PARTS;
+  const money = (n) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const sum = (g) => g.items.reduce((a, i) => a + i.qty * i.price, 0);
+  const chip = (i) => i.status === 'special'
+    ? '<span class="chip chip-warn">Special order</span>'
+    : '<span class="chip chip-ok">Add to cart</span>';
+
+  document.getElementById('checked').textContent = 'Prices and availability checked ' + P.checked;
+
+  const hardware = P.groups.reduce((a, g) => a + sum(g) * g.multiplier, 0);
+  const lines = P.groups.reduce((a, g) => a + g.items.length, 0);
+  const special = P.groups.flatMap((g) => g.items).filter((i) => i.status === 'special');
+  const specialUnits = P.groups.reduce((a, g) => a + g.items.filter((i) => i.status === 'special').reduce((b, i) => b + i.qty * g.multiplier, 0), 0);
+
+  document.getElementById('summary').innerHTML = [
+    [money(hardware), 'Hardware at today\'s prices'],
+    [money(P.request), 'Total request'],
+    [String(lines), 'Different parts to order'],
+    [String(lines - special.length) + ' of ' + lines, 'Listings showing Add to cart'],
+  ].map(([v, l]) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+
+  document.getElementById('alert-text').innerHTML =
+    `<strong>${special.length} parts are not in stock and must be special ordered from Saitech:</strong> the server motherboard and the EPYC processor (${specialUnits} units in total, since both compute servers need them). Saitech lists 1–3 weeks for the motherboard. Everything else showed Add to cart when checked.`;
+
+  const groupsEl = document.getElementById('groups');
+  P.groups.forEach((g) => groupsEl.insertAdjacentHTML('beforeend', groupHTML(g, true)));
+
+  function groupHTML(g, inRequest) {
+    const per = sum(g);
+    const rows = g.items.map((i) => `
+      <tr>
+        <td><div class="item-name">${esc(i.name)}</div>
+          ${i.detail ? `<div class="item-sub">${esc(i.detail)}</div>` : ''}
+          ${i.lead ? `<div class="item-sub">${esc(i.lead)}</div>` : ''}
+          ${i.changed ? `<div class="item-changed">${esc(i.changed)}</div>` : ''}</td>
+        <td>${esc(i.seller)}</td>
+        <td>${chip(i)}</td>
+        <td class="r">${i.qty}</td>
+        <td class="r">${money(i.price)}</td>
+        <td class="r">${money(i.qty * i.price)}</td>
+        <td><a class="buy" href="${esc(i.url)}" target="_blank" rel="noopener">Buy ↗</a></td>
+      </tr>`).join('');
+    const multRow = g.multiplier > 1
+      ? `<tr class="subtotal"><td colspan="5">× ${g.multiplier} servers</td><td class="r">${money(per * g.multiplier)}</td><td></td></tr>` : '';
+    return `
+      <section class="group" id="${g.id}" aria-labelledby="${g.id}-h">
+        <div class="group-head">
+          <div><h2 id="${g.id}-h">${esc(g.name)}</h2><p>${esc(g.note)}</p></div>
+          <span class="mult">${g.multiplier > 1 ? 'Buy ×' + g.multiplier : inRequest ? 'Buy ×1' : 'Optional'}</span>
+        </div>
+        <div class="table-scroll">
+          <table class="parts">
+            <thead><tr><th>Item</th><th>Seller</th><th>Status</th><th class="r">Qty</th><th class="r">Each</th><th class="r">Line total</th><th>Link</th></tr></thead>
+            <tbody>${rows}
+              <tr class="subtotal"><td colspan="5">${g.multiplier > 1 ? 'Per server' : 'Subtotal'}</td><td class="r">${money(per)}</td><td></td></tr>
+              ${multRow}
+            </tbody>
+          </table>
+        </div>
+      </section>`;
+  }
+
+  const t = [];
+  P.groups.forEach((g) => t.push(`<tr><td>${esc(g.name)}${g.multiplier > 1 ? ' × ' + g.multiplier : ''}</td><td class="r">${money(sum(g) * g.multiplier)}</td></tr>`));
+  t.push(`<tr><td><strong>Hardware at today's prices</strong></td><td class="r"><strong>${money(hardware)}</strong></td></tr>`);
+  t.push(`<tr><td>Cushion left for price changes (${((P.request - hardware) / hardware * 100).toFixed(1)}%)</td><td class="r">${money(P.request - hardware)}</td></tr>`);
+  t.push(`<tr class="total"><td>Total request</td><td class="r">${money(P.request)}</td></tr>`);
+  document.getElementById('totals').innerHTML = t.join('');
+
+  document.getElementById('alts').innerHTML = P.alternates.map((a) => `
+    <div class="alt"><div><div class="item-name">${esc(a.name)} · ${money(a.price)}</div><div class="item-sub">${esc(a.why)}</div></div>
+    <a class="buy" href="${esc(a.url)}" target="_blank" rel="noopener">View listing ↗</a></div>`).join('');
+
+  const o = P.option;
+  document.getElementById('option').innerHTML = groupHTML(o, false);
+
+  // plain-text version for a purchase order or an email
+  function asText() {
+    const out = [`JNPSD AI cluster purchase list (prices checked ${P.checked})`, ''];
+    P.groups.concat([o]).forEach((g) => {
+      out.push(`${g.name.toUpperCase()}${g.multiplier > 1 ? ` (buy x${g.multiplier}; quantities are per server)` : ''}${g === o ? ' [OPTIONAL, not in request]' : ''}`);
+      g.items.forEach((i) => out.push(`- ${i.name} | qty ${i.qty} | ${money(i.price)} each | ${money(i.qty * i.price)} | ${i.seller}${i.status === 'special' ? ' | SPECIAL ORDER' : ''} | ${i.url}`));
+      out.push(`  Subtotal: ${money(sum(g))}${g.multiplier > 1 ? ` per server, ${money(sum(g) * g.multiplier)} for ${g.multiplier}` : ''}`, '');
+    });
+    out.push(`Hardware at today's prices: ${money(hardware)}`, `Total request: ${money(P.request)}`);
+    return out.join('\n');
+  }
+  const btn = document.getElementById('copy-btn'), msg = document.getElementById('copy-msg'), ta = document.getElementById('copy-fallback');
+  btn.addEventListener('click', () => {
+    const text = asText();
+    const fallback = () => { ta.value = text; ta.hidden = false; ta.focus(); ta.select(); msg.textContent = 'Copying is blocked here. The list is selected below; press Ctrl+C or Cmd+C.'; };
+    try {
+      navigator.clipboard.writeText(text).then(() => { msg.textContent = 'Copied. Paste it into a purchase request or an email.'; }, fallback);
+    } catch (e) { fallback(); }
+  });
+})();
+</script>
+</body>
+</html>

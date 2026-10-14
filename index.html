@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>JNPSD AI Server Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+  /* Layout: one reading column; the three options always sit side by side in the same order (Top tier, Option 2, Option 3) so the eye learns the columns once. */
+  :root { --tt: var(--teal); --o2: #8A5A00; --o3: var(--bad); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --o2: #F2C14E; } }
+  :root[data-theme="dark"] { --o2: #F2C14E; }
+
+  .hero { padding-block: 48px 32px; display: flex; flex-direction: column; gap: 16px; }
+  .hero h1 { max-width: 15ch; }
+  .rec-strip { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border: 2px solid var(--ink); border-radius: 10px; padding: 14px 18px; margin-top: 8px; }
+  .rec-strip strong { font-family: var(--f-display); text-transform: uppercase; font-size: 24px; letter-spacing: 0.01em; }
+  .rec-strip p { max-width: 70ch; }
+
+  .options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 900px) { .options { grid-template-columns: minmax(0, 1fr); } }
+  .opt { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; position: relative; }
+  .opt.featured { border: 2px solid var(--tt); box-shadow: 0 8px 24px rgba(14,107,112,0.12); }
+  .badge { align-self: flex-start; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 9px; border-radius: 3px; font-weight: 600; }
+  .b-tt { background: var(--tt); color: var(--bg); }
+  .b-o2 { background: var(--warn-soft); color: var(--o2); }
+  .b-o3 { background: var(--bad-soft); color: var(--o3); }
+  .opt h3 { font-size: 30px; }
+  .opt .price { font-family: var(--f-display); font-weight: 800; font-size: 52px; line-height: 0.95; font-variant-numeric: tabular-nums; }
+  .opt .per { font-size: 13px; color: var(--ink-2); }
+  .opt .one { font-size: 15px; }
+  .facts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; border-top: 1px solid var(--rule); padding-top: 12px; }
+  .facts li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; }
+  .facts .k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); padding-top: 2px; }
+  .opt .links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 6px; }
+  .opt .links .btn { padding: 9px 14px; font-size: 14px; }
+
+  table.cmp { min-width: 760px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+  table.cmp th, table.cmp td { padding: 11px 14px; }
+  table.cmp thead th { position: sticky; top: 0; background: var(--surface); font-size: 12px; }
+  table.cmp thead th:nth-child(2) { color: var(--tt); }
+  table.cmp thead th:nth-child(3) { color: var(--o2); }
+  table.cmp thead th:nth-child(4) { color: var(--o3); }
+  table.cmp td:first-child { font-weight: 600; width: 22%; }
+  table.cmp td:nth-child(2) { background: var(--teal-soft); }
+  table.cmp tr.group td { background: var(--bg); font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); font-weight: 500; padding-block: 8px; }
+  table.cmp tr:last-child td { border-bottom: none; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+  .d-good { background: var(--ok); } .d-mid { background: #D9A21B; } .d-bad { background: var(--o3); }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); margin-top: 10px; }
+
+  .scen-pick { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .scen-pick button { font: 600 14px var(--f-body); padding: 10px 14px; border-radius: 999px; border: 1.5px solid var(--band-muted); background: transparent; color: var(--band-ink); cursor: pointer; }
+  .scen-pick button[aria-pressed="true"] { background: var(--band-ink); color: var(--band); border-color: var(--band-ink); }
+  .scen-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 900px) { .scen-grid { grid-template-columns: minmax(0, 1fr); } }
+  .scen { background: var(--band-2); border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; border-top: 4px solid var(--tt); }
+  .scen.o2 { border-top-color: #F2C14E; } .scen.o3 { border-top-color: #FF8A80; }
+  .scen .name { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-label); }
+  .scen .out { font-family: var(--f-display); font-weight: 700; font-size: 26px; line-height: 1.05; text-transform: uppercase; color: var(--band-ink); }
+  .scen dl { margin: 0; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 6px 10px; font-size: 14px; }
+  .scen dt { color: var(--band-label); font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding-top: 2px; }
+  .scen dd { margin: 0; color: var(--band-muted); }
+  .skill { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 6px; }
+  .skill i { width: 14px; height: 6px; border-radius: 2px; background: #3A4654; }
+  .skill i.on { background: #F2C14E; }
+  .scen-note { margin-top: 16px; font-size: 14px; }
+
+  .staff { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  @media (max-width: 860px) { .staff { grid-template-columns: minmax(0, 1fr); } }
+  .staff ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+  .callout { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .callout h3 { font-size: 24px; }
+  table.tasks td, table.tasks th { padding: 8px 10px; font-size: 14px; }
+
+  .vid-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .vid-tabs button { font: 600 14px var(--f-body); padding: 10px 16px; border-radius: 6px; border: 1.5px solid var(--band-muted); background: transparent; color: var(--band-ink); cursor: pointer; }
+  .vid-tabs button[aria-selected="true"] { background: var(--band-ink); color: var(--band); border-color: var(--band-ink); }
+  .video-frame { border-radius: 10px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; max-width: 100%; }
+  .video-frame video { width: 100%; height: 100%; object-fit: contain; }
+
+  .why { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 860px) { .why { grid-template-columns: minmax(0, 1fr); } }
+  .why div { border-top: 3px solid var(--tt); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .why h3 { font-size: 24px; }
+  .closing { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; padding: 22px; border: 2px solid var(--ink); border-radius: 10px; }
+</style>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">JNPSD · AI server options</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#options">Options</a>
+      <a href="#compare">Compare</a>
+      <a href="#failures">When things break</a>
+      <a href="#staff">Who fixes it</a>
+      <a href="#videos">Videos</a>
+      <a class="cta-link" href="#recommendation">Recommendation</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap" style="display: flex; flex-direction: column; gap: 16px">
+      <div class="eyebrow">Technology proposal · October 2026 · Three options</div>
+      <h1>AI agents for district leaders</h1>
+      <p class="lede">Three ways to build the same thing. Every option gives principals, the superintendent, finance and curriculum leaders the same AI agents, the same frontier AI models and room for district web apps. What changes is how well the system protects itself, and how much work falls on IT staff when hardware fails.</p>
+      <div class="rec-strip">
+        <strong>Recommended: Top tier</strong>
+        <p>Automatic failover, the most room for growth, and the least emergency work for IT staff. Option 2 is the minimum we would accept; Option 3 is not recommended.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="options" style="padding-top: 8px">
+    <div class="wrap">
+      <div class="options">
+        <article class="opt featured">
+          <span class="badge b-tt">Recommended</span>
+          <h3>Top tier</h3>
+          <div><div class="price">$19,830</div><div class="per">About $3,970 a year over a 5-year life</div></div>
+          <p class="one">Two servers that back each other up, plus a backup and referee box.</p>
+          <ul class="facts">
+            <li><span class="k">Server fails</span><span>Work restarts on the twin within minutes, automatically</span></li>
+            <li><span class="k">Work at risk</span><span>The last few minutes</span></li>
+            <li><span class="k">IT effort</span><span>Repair on a normal schedule; no rush restore</span></li>
+            <li><span class="k">Growth</span><span>Two servers' worth of room; two AI cards fit</span></li>
+          </ul>
+          <div class="links"><a class="btn btn-primary" href="top-tier/">Full proposal</a><a class="btn btn-ghost" href="top-tier/purchase-list.html">Purchase list</a></div>
+        </article>
+        <article class="opt">
+          <span class="badge b-o2">Minimum</span>
+          <h3>Option 2</h3>
+          <div><div class="price">$10,499</div><div class="per">About $2,100 a year over a 5-year life</div></div>
+          <p class="one">One server plus a separate backup box.</p>
+          <ul class="facts">
+            <li><span class="k">Server fails</span><span>Work pauses until IT repairs it, usually hours</span></li>
+            <li><span class="k">Work at risk</span><span>Since the last restore point (a few hours)</span></li>
+            <li><span class="k">IT effort</span><span>Urgent repair, often followed by a restore</span></li>
+            <li><span class="k">Growth</span><span>Add a second server later (~$6,500) to reach the top tier</span></li>
+          </ul>
+          <div class="links"><a class="btn btn-ghost" href="option-2/">Full proposal</a><a class="btn btn-ghost" href="option-2/purchase-list.html">Purchase list</a></div>
+        </article>
+        <article class="opt">
+          <span class="badge b-o3">Not recommended</span>
+          <h3>Option 3</h3>
+          <div><div class="price">$6,191</div><div class="per">About $1,240 a year over a 5-year life</div></div>
+          <p class="one">One machine that holds the agents, the apps and its own backups.</p>
+          <ul class="facts">
+            <li><span class="k">Server fails</span><span>Everything stops until IT repairs it, a day or more</span></li>
+            <li><span class="k">Work at risk</span><span>Since the last restore point; all of it if the box is lost</span></li>
+            <li><span class="k">IT effort</span><span>Urgent repair, reinstall and full restore</span></li>
+            <li><span class="k">Growth</span><span>No path to automatic failover</span></li>
+          </ul>
+          <div class="links"><a class="btn btn-ghost" href="option-3/">Full proposal</a><a class="btn btn-ghost" href="option-3/purchase-list.html">Purchase list</a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare" style="padding-top: 16px">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Side by side</div>
+        <h2>Compare the options</h2>
+        <p class="lede">Read across a row to see what each option does in the same situation.</p>
+      </div>
+      <div class="table-scroll">
+        <table class="cmp">
+          <thead><tr><th></th><th>Top tier · Recommended</th><th>Option 2 · Minimum</th><th>Option 3 · Not recommended</th></tr></thead>
+          <tbody>
+            <tr class="group"><td colspan="4">Cost</td></tr>
+            <tr><td>One-time request</td><td>$19,830.00</td><td>$10,498.87</td><td>$6,190.70</td></tr>
+            <tr><td>Per year over 5 years</td><td>About $3,970</td><td>About $2,100</td><td>About $1,240</td></tr>
+            <tr><td>Ongoing AI usage</td><td>Same for all three: one shared, capped pool, expected in the low hundreds of dollars a month</td><td>Same</td><td>Same</td></tr>
+            <tr class="group"><td colspan="4">What leaders get</td></tr>
+            <tr><td>AI agents and models</td><td>Same</td><td>Same</td><td>Same</td></tr>
+            <tr><td>District web apps</td><td><span class="dot d-good"></span>Two servers' worth of room</td><td><span class="dot d-mid"></span>One server</td><td><span class="dot d-mid"></span>One machine</td></tr>
+            <tr><td>Local AI add-on</td><td>Two cards, $3,399.98</td><td>Two cards, $3,399.98</td><td>Two cards, $3,399.98</td></tr>
+            <tr class="group"><td colspan="4">Protection</td></tr>
+            <tr><td>Machines</td><td>3</td><td>2</td><td>1</td></tr>
+            <tr><td>A server fails</td><td><span class="dot d-good"></span>Twin takes over in minutes</td><td><span class="dot d-mid"></span>Pauses, usually hours</td><td><span class="dot d-bad"></span>Pauses, a day or more</td></tr>
+            <tr><td>The fast drive fails</td><td><span class="dot d-good"></span>No impact (mirrored)</td><td><span class="dot d-good"></span>No impact (mirrored)</td><td><span class="dot d-bad"></span>Everything stops</td></tr>
+            <tr><td>A machine is destroyed</td><td><span class="dot d-good"></span>The rest keep running</td><td><span class="dot d-mid"></span>Restore from the other box</td><td><span class="dot d-bad"></span>Backups lost with it</td></tr>
+            <tr><td>Software updates</td><td><span class="dot d-good"></span>No downtime</td><td><span class="dot d-mid"></span>After hours</td><td><span class="dot d-mid"></span>After hours</td></tr>
+            <tr class="group"><td colspan="4">Staff and growth</td></tr>
+            <tr><td>IT work when hardware fails</td><td><span class="dot d-good"></span>Replace the part when convenient</td><td><span class="dot d-mid"></span>Urgent repair, then restore</td><td><span class="dot d-bad"></span>Urgent repair, reinstall, full restore</td></tr>
+            <tr><td>Linux skill needed in an emergency</td><td><span class="dot d-good"></span>Low</td><td><span class="dot d-mid"></span>Medium to high</td><td><span class="dot d-bad"></span>High</td></tr>
+            <tr><td>Upgrade path</td><td><span class="dot d-good"></span>Already complete</td><td><span class="dot d-mid"></span>Add a second server (~$6,500)</td><td><span class="dot d-bad"></span>None</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="legend"><span><span class="dot d-good"></span>Strong</span><span><span class="dot d-mid"></span>Acceptable</span><span><span class="dot d-bad"></span>Weak</span><span>Per-year figures divide the one-time cost over 5 years, a typical server life.</span></div>
+    </div>
+  </section>
+
+  <section id="failures" class="band">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Pick a situation</div>
+        <h2>When things break</h2>
+        <p>Choose what goes wrong to see what happens with each option: how long leaders wait, what work is lost, and what IT staff have to do.</p>
+      </div>
+      <div class="scen-pick" role="group" aria-label="Failure situations" id="scen-pick"></div>
+      <div class="scen-grid" id="scen-grid" aria-live="polite"></div>
+      <p class="scen-note" id="scen-note"></p>
+    </div>
+  </section>
+
+  <section id="staff">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Who fixes it</div>
+        <h2>All three options run on Linux</h2>
+        <p class="lede">Every option uses Proxmox, a Linux-based server platform. Day-to-day work happens in a web browser, but repairing a failed server and restoring it under pressure takes Linux skill our IT staff may not have yet.</p>
+      </div>
+      <div class="staff">
+        <div class="table-scroll">
+          <table class="tasks">
+            <thead><tr><th>Task</th><th>How it's done</th><th>Skill</th></tr></thead>
+            <tbody>
+              <tr><td>Add an agent or web app</td><td>Web interface</td><td>Low</td></tr>
+              <tr><td>Check that backups ran</td><td>Web interface, plus email alerts</td><td>Low</td></tr>
+              <tr><td>Restore one deleted app or file</td><td>Web interface</td><td>Low to medium</td></tr>
+              <tr><td>Replace a failed drive</td><td>Swap the drive, then rebuild from the web interface</td><td>Medium</td></tr>
+              <tr><td>Rebuild a failed server and restore everything</td><td>Reinstall Proxmox, reconnect storage, restore every agent and app</td><td>High</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <h3>Why this favors the top tier</h3>
+          <p>With the top tier, a hardware failure is not an emergency: work moves to the twin server automatically, and IT can replace the part during normal hours. With Options 2 and 3, the same failure stops every agent until staff repair the hardware <strong>and</strong> restore from backup, the hardest task in the table, done while leaders wait.</p>
+          <div class="eyebrow">Our plan for any option</div>
+          <ul>
+            <li>Mike Vincent serves as the primary administrator; he runs this same platform today.</li>
+            <li>Train at least two IT staff on the routine tasks above.</li>
+            <li>Write step-by-step runbooks for drive replacement and restores, and practice a restore before going live.</li>
+            <li>Consider a paid Proxmox subscription, which adds support tickets with Proxmox engineers.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="videos" class="band">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Under two minutes each</div>
+        <h2>Watch the options</h2>
+      </div>
+      <div class="vid-tabs" role="tablist" aria-label="Option videos">
+        <button role="tab" id="tab-tt" aria-selected="true" aria-controls="vid-panel" data-src="top-tier/video/commercial.mp4" data-poster="top-tier/img/poster.jpg">Top tier</button>
+        <button role="tab" id="tab-o2" aria-selected="false" aria-controls="vid-panel" data-src="option-2/video/commercial.mp4" data-poster="option-2/img/poster.jpg">Option 2</button>
+        <button role="tab" id="tab-o3" aria-selected="false" aria-controls="vid-panel" data-src="option-3/video/commercial.mp4" data-poster="option-3/img/poster.jpg">Option 3</button>
+      </div>
+      <div class="video-frame" id="vid-panel" role="tabpanel" aria-labelledby="tab-tt">
+        <video id="vid" controls preload="metadata" playsinline poster="top-tier/img/poster.jpg" src="top-tier/video/commercial.mp4"></video>
+      </div>
+    </div>
+  </section>
+
+  <section id="recommendation">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Our recommendation</div>
+        <h2>Approve the top tier</h2>
+        <p class="lede">The top tier costs more up front, but it is the only option where a hardware failure does not stop the district's AI work, and the only one built for growth.</p>
+      </div>
+      <div class="why">
+        <div><h3>Room to grow</h3><p>Two servers' worth of processing and memory for more agents, more web apps and local AI, without buying another machine.</p></div>
+        <div><h3>No emergencies</h3><p>Automatic failover turns a hardware failure into scheduled maintenance, so staff are never restoring from backup while leaders wait.</p></div>
+        <div><h3>Inside the budget</h3><p>$19,830 fits the $10K–$20K budget. If budget forces a smaller start, Option 2 is the minimum, and it can grow into the top tier later.</p></div>
+      </div>
+      <div class="closing" style="margin-top: 28px">
+        <div><div class="eyebrow">Next step</div><p style="font-size: 18px; font-weight: 600">Approve the $19,830 top-tier request.</p></div>
+        <a class="btn btn-primary" href="top-tier/">See the top-tier proposal</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span>Prepared by Mike Vincent, Instructional Technology &amp; CTE Coordinator · JNPSD</span>
+    <span>Prices and availability checked October 13, 2026</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // What happens in each situation, per option. Skill: 1 low … 3 high.
+  const SCEN = [
+    { id: 'server', label: 'A server breaks', note: 'Most hardware failures are a power supply, memory stick or motherboard. Option 2\'s server board is special order (1–3 weeks); Option 3\'s parts are in stock at Newegg.',
+      o: [
+        { out: 'Keeps working', wait: 'A few minutes while work restarts on the twin', lost: 'At most the last few minutes', it: 'Replace the part during normal hours; the server rejoins the cluster', skill: 1 },
+        { out: 'Work pauses', wait: 'Hours for most parts; up to 1–3 weeks for a motherboard (key agents can run on the backup box meanwhile)', lost: 'Changes since the last restore point, if the drives were damaged', it: 'Urgent repair, then restore from the backup box if needed', skill: 2 },
+        { out: 'Everything stops', wait: 'A day or more', lost: 'Changes since the last restore point, if the drives were damaged', it: 'Urgent repair, then reinstall and restore if needed', skill: 3 },
+      ] },
+    { id: 'fast', label: 'The fast drive dies', note: 'The fast NVMe drive holds the agents and apps. Mirroring means a second copy is always running.',
+      o: [
+        { out: 'Keeps working', wait: 'None', lost: 'Nothing', it: 'Swap the drive when convenient; the mirror rebuilds', skill: 1 },
+        { out: 'Keeps working', wait: 'None', lost: 'Nothing', it: 'Swap the drive when convenient; the mirror rebuilds', skill: 1 },
+        { out: 'Everything stops', wait: 'A day or two', lost: 'Changes since the last restore point', it: 'Replace the drive, reinstall Proxmox, restore every agent and app', skill: 3 },
+      ] },
+    { id: 'disk', label: 'A storage drive dies', note: 'Every option can lose one storage drive without losing data. A second failure before the rebuild finishes is the risk.',
+      o: [
+        { out: 'Keeps working', wait: 'None', lost: 'Nothing; a spare drive is already on the shelf', it: 'Swap in the spare; the pool rebuilds', skill: 2 },
+        { out: 'Keeps working', wait: 'None', lost: 'Nothing', it: 'Order and swap the drive; the mirror rebuilds', skill: 2 },
+        { out: 'Keeps working', wait: 'None', lost: 'Nothing, unless a second drive fails during the rebuild', it: 'Order and swap the drive; the pool rebuilds', skill: 2 },
+      ] },
+    { id: 'oops', label: 'A file is deleted or an update goes wrong', note: 'Restore points cover mistakes in every option. Restoring one app is a few clicks in the web interface.',
+      o: [
+        { out: 'Roll it back', wait: 'Minutes for the affected app', lost: 'Changes since the last restore point (nightly)', it: 'Restore that app from the web interface', skill: 1 },
+        { out: 'Roll it back', wait: 'Minutes for the affected app', lost: 'Changes since the last restore point (every few hours)', it: 'Restore that app from the web interface', skill: 1 },
+        { out: 'Roll it back', wait: 'Minutes for the affected app', lost: 'Changes since the last restore point (every few hours)', it: 'Restore that app from the web interface', skill: 1 },
+      ] },
+    { id: 'lost', label: 'A machine is destroyed', note: 'Fire, theft, a power surge or a failed controller. A whole-room event affects every option, so an off-site copy of the backups is wise in all three.',
+      o: [
+        { out: 'Keeps working', wait: 'Minutes if a server is lost; none if the backup box is lost', lost: 'At most the last few minutes', it: 'Replace the machine and rejoin it to the cluster', skill: 2 },
+        { out: 'Work pauses', wait: 'Days to weeks to replace the server; key agents can run on the backup box', lost: 'Changes since the last restore point', it: 'Rebuild the server and restore everything from the backup box', skill: 3 },
+        { out: 'Everything lost', wait: 'Weeks to rebuild from scratch', lost: 'Everything, unless an off-site copy was kept', it: 'Buy new hardware and rebuild every agent and app', skill: 3 },
+      ] },
+  ];
+  const NAMES = [['tt', 'Top tier'], ['o2', 'Option 2'], ['o3', 'Option 3']];
+  const SKILL = ['', 'Low', 'Medium', 'High'];
+  const pick = document.getElementById('scen-pick'), grid = document.getElementById('scen-grid'), note = document.getElementById('scen-note');
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function show(id) {
+    const sc = SCEN.find((x) => x.id === id) || SCEN[0];
+    pick.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === sc.id)));
+    grid.innerHTML = sc.o.map((r, i) => `
+      <div class="scen ${NAMES[i][0]}">
+        <div class="name">${NAMES[i][1]}</div>
+        <div class="out">${esc(r.out)}</div>
+        <dl>
+          <dt>Leaders wait</dt><dd>${esc(r.wait)}</dd>
+          <dt>Work lost</dt><dd>${esc(r.lost)}</dd>
+          <dt>IT does</dt><dd>${esc(r.it)}</dd>
+          <dt>Linux skill</dt><dd><span class="skill" aria-hidden="true">${[1, 2, 3].map((n) => `<i class="${n <= r.skill ? 'on' : ''}"></i>`).join('')}</span>${SKILL[r.skill]}</dd>
+        </dl>
+      </div>`).join('');
+    note.textContent = sc.note;
+  }
+  pick.innerHTML = SCEN.map((s) => `<button type="button" data-id="${s.id}" aria-pressed="false">${esc(s.label)}</button>`).join('');
+  pick.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) show(b.dataset.id); });
+  show('server');
+
+  // video tabs
+  const vid = document.getElementById('vid'), panel = document.getElementById('vid-panel');
+  document.querySelectorAll('.vid-tabs button').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('.vid-tabs button').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+    vid.pause(); vid.poster = b.dataset.poster; vid.src = b.dataset.src; vid.load();
+    panel.setAttribute('aria-labelledby', b.id);
+  }));
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>JNPSD AI Server Option 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+  .hero { padding-block: 56px 48px; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 40px; align-items: end; }
+  .hero h1 span { display: block; }
+  .hero h1 .t { color: var(--teal); }
+  .hero .lede { margin-top: 20px; }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+  .price-card { border-top: 3px solid var(--ink); padding-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .price-card .big { font-family: var(--f-display); font-weight: 800; font-size: clamp(56px, 8vw, 84px); line-height: 0.9; }
+  .price-card p { font-size: 14px; color: var(--ink-2); }
+  @media (max-width: 800px) { .hero-grid { grid-template-columns: minmax(0, 1fr); } }
+
+  .video-band { padding-block: 48px; }
+  .video-frame { border-radius: 10px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; max-width: 100%; }
+  .video-frame video { width: 100%; height: 100%; object-fit: contain; }
+  .video-meta { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+
+  .role { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .role h3 { color: var(--teal); }
+  .role ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
+  .role li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; }
+  .role li::before { content: ''; width: 10px; height: 10px; margin-top: 7px; border-radius: 50%; background: var(--teal); }
+  .figure { border-radius: 8px; overflow: hidden; border: 1px solid var(--rule); }
+  .figure-cap { font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+  .note { font-size: 14px; color: var(--ink-2); margin-top: 18px; }
+
+  .apps { display: flex; flex-direction: column; gap: 18px; }
+  .apps dl { margin: 0; display: grid; gap: 14px; }
+  .apps dt { font-weight: 700; }
+  .apps dd { margin: 2px 0 0; color: var(--ink-2); }
+
+  .layer { background: var(--band-2); border-radius: 8px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .layer .k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase; }
+  .layer h3 { font-size: 24px; }
+  .layer p { font-size: 15px; }
+  .band-figure { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+  .band-figure img { border-radius: 8px; }
+  @media (max-width: 760px) { .band-figure { grid-template-columns: minmax(0, 1fr); } }
+
+  .machine { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; background: var(--surface); }
+  .machine .spec { font-family: var(--f-mono); font-size: 12px; color: var(--ink-2); }
+
+  .ongoing { display: flex; flex-direction: column; gap: 14px; }
+  .ongoing div strong { display: block; }
+  .ongoing div span { color: var(--ink-2); font-size: 15px; }
+
+  .option { border: 1px solid var(--rule); border-radius: 8px; padding: 18px; background: var(--surface); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .option .tag { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal); }
+  .option ul { margin: 0; padding-left: 18px; font-size: 15px; display: flex; flex-direction: column; gap: 4px; }
+  .option .sub { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin-top: 4px; }
+  .recommend { margin-top: 20px; background: var(--accent); color: var(--on-accent); border-radius: 8px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .recommend .eyebrow { color: var(--on-accent); }
+  .recommend p { max-width: none; }
+
+  .phase2 { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; padding-block: 28px; }
+  .phase2 .amt { font-family: var(--f-display); font-weight: 800; font-size: 52px; color: var(--accent); line-height: 1; }
+  .phase2 > div:first-child { display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1 1 420px; }
+
+  .steps { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; counter-reset: s; }
+  .steps li { counter-increment: s; border-top: 3px solid var(--ink); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .steps li::before { content: 'Step ' counter(s); font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+  .steps strong { font-family: var(--f-display); text-transform: uppercase; font-size: 24px; line-height: 1; }
+  .steps span { font-size: 15px; color: var(--ink-2); }
+  @media (max-width: 800px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+
+  .crash { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; counter-reset: c; }
+  .crash li { background: var(--band-2); border-radius: 8px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; counter-increment: c; }
+  .crash .k, .worst .k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase; }
+  .crash .k::before { content: counter(c) ' · '; }
+  .crash h3 { font-size: 24px; }
+  .crash p { font-size: 15px; }
+  .worst { margin-top: 14px; border: 1px solid var(--accent); border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
+  .worst p { max-width: none; }
+  @media (max-width: 900px) { .crash { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .crash { grid-template-columns: minmax(0, 1fr); } }
+  table.compare { min-width: 640px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+  table.compare td:first-child { font-weight: 600; width: 26%; }
+  table.compare .hl { background: var(--teal-soft); }
+  table.compare th.hl { color: var(--teal); }
+  table.compare tr:last-child td { border-bottom: none; }
+  .warn-band { padding-block: 0 8px; }
+  .warn { border: 2px solid var(--bad); border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 10px; background: var(--bad-soft); }
+  .warn-k { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--bad); font-weight: 600; }
+  .warn h2 { font-size: clamp(30px, 4.5vw, 44px); }
+  .warn p { max-width: 75ch; }
+  .warn-links { display: flex; gap: 12px; flex-wrap: wrap; }
+  .compare th a { color: inherit; }
+  table.compare .hl { background: var(--bad-soft); }
+  table.compare th.hl { color: var(--bad); }
+  .closing { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 36px; padding: 22px; border: 2px solid var(--ink); border-radius: 10px; }
+</style>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">JNPSD · AI server proposal · Option 3</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="../">← All options</a>
+      <a href="#video">Video</a>
+      <a href="#roles">What agents do</a>
+      <a href="#crash">If it crashes</a>
+      <a href="#compare">Compare options</a>
+      <a href="#investment">Investment</a>
+      <a href="#paying">Paying for AI</a>
+      <a class="cta-link" href="purchase-list.html">Purchase list</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Technology proposal · October 2026 · Option 3 · Low budget</div>
+        <h1><span>AI agents</span><span class="t">for district leaders.</span></h1>
+        <p class="lede">The lowest-cost way to give principals, the superintendent, finance and curriculum leaders their own AI agents: one machine that runs the agents, the district web apps and its own backups. It is included for comparison. <strong>We do not recommend it.</strong></p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#video">Watch the video (1 min 44 s)</a>
+          <a class="btn btn-ghost" href="purchase-list.html">See the purchase list</a>
+        </div>
+      </div>
+      <div class="price-card">
+        <div class="eyebrow">One-time request</div>
+        <div class="big num">$6,191</div>
+        <p>One machine plus a 10% cushion for price changes. Only $4,308 less than Option 2, which keeps its backups in a separate box.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="warn-band" id="not-recommended">
+    <div class="wrap warn">
+      <div class="warn-k">Not recommended</div>
+      <h2>The savings don't justify the risk</h2>
+      <p>Everything, including the backups, lives in one machine. A single failure stops all work, and losing the machine loses the backups with it. The fast drive that runs the agents is not mirrored. And there is no upgrade path to automatic failover. Saving $4,308 over Option 2 does not justify giving up that protection.</p>
+      <div class="warn-links"><a class="btn btn-primary" href="../option-2/" >See Option 2 (recommended minimum)</a><a class="btn btn-ghost" href="../top-tier/" >See the top tier</a></div>
+    </div>
+  </section>
+
+  <section id="video" class="band video-band">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">The proposal in under two minutes</div>
+        <h2>Watch first</h2>
+      </div>
+      <div class="video-frame">
+        <video id="commercial" controls preload="metadata" playsinline poster="img/poster.jpg">
+          <source src="video/commercial.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="video-meta">
+        <p>Narrated, with captions burned in. Covers the leadership agents, the cloud AI models, why one machine is a single point of failure, and the cost.</p>
+        <a class="btn btn-ghost" style="border-color: var(--band-ink); color: var(--band-ink)" href="video/commercial.mp4" target="_blank" rel="noopener">Open the video in its own tab</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="roles">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">What the agents do</div>
+        <h2>Built around district leadership</h2>
+        <p class="lede">Each leader gets agents that carry out multi-step work. Shared agents serve the whole leadership team. Leaders review and approve everything an agent drafts.</p>
+      </div>
+      <div class="grid-4">
+        <article class="role">
+          <h3>Principals</h3>
+          <ul><li>Parent letters and newsletters</li><li>Attendance and discipline summaries</li><li>Walkthrough and observation notes</li></ul>
+        </article>
+        <article class="role">
+          <h3>Superintendent</h3>
+          <ul><li>Board meeting briefs and agendas</li><li>Policy research and first drafts</li><li>Community and staff updates</li></ul>
+        </article>
+        <article class="role">
+          <h3>Finance</h3>
+          <ul><li>Budget reports and variance summaries</li><li>Grant and Perkins spending tracking</li><li>Purchase order and invoice checks</li></ul>
+        </article>
+        <article class="role">
+          <h3>Curriculum</h3>
+          <ul><li>Standards and curriculum alignment</li><li>PD planning and sign-in tracking</li><li>Assessment data reports</li></ul>
+        </article>
+      </div>
+      <div style="margin-top: 28px">
+        <div class="figure"><img src="img/f_12.5.jpg" alt="Animated scene: a principal, the superintendent, a finance leader and a curriculum leader, each with their own AI agent, connected to one shared agent." width="1100" height="514" loading="lazy"></div>
+        <p class="figure-cap">From the video: every leader has their own agent, and shared agents serve the team.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top: 0">
+    <div class="wrap grid-2">
+      <div class="apps">
+        <div class="eyebrow">Frontier AI, no AI hardware</div>
+        <h2>The thinking happens in the cloud</h2>
+        <p>The agents live on our own server. The reasoning is done by frontier models such as Claude and GPT, so the district does not buy AI hardware now. One shared usage pool with hard spending limits keeps the monthly cost predictable.</p>
+      </div>
+      <div class="apps">
+        <div class="eyebrow">More than an AI workspace</div>
+        <h2>District web apps on the same machine</h2>
+        <p>One physical machine runs many separate virtual servers, each with its own job. A new app means a new virtual server, not a new box.</p>
+        <dl>
+          <div><dt>AI chatbots on district documents</dt><dd>Answers for staff and families drawn from our own handbooks, policies and guides.</dd></div>
+          <div><dt>Edcamp and PD tracking</dt><dd>Sign-ups, sessions and credit records on district-run servers.</dd></div>
+          <div><dt>Custom district tools</dt><dd>Development projects built around district needs.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="crash" class="band">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Why we don't recommend this option</div>
+        <h2>One machine is one point of failure</h2>
+        <p>The agents, the web apps and the backups all live in the same box. Most failures can be fixed, but each one stops all work, and some can take the backups with them.</p>
+      </div>
+      <ol class="crash">
+        <li><div class="k">Every few hours</div><h3>Restore points</h3><p>Restore points are saved every few hours and nightly, but onto drives inside the same machine.</p></li>
+        <li><div class="k">A part fails</div><h3>Everything stops</h3><p>Any failure, including the single fast drive that runs the agents, stops every agent and web app until the part is replaced.</p></li>
+        <li><div class="k">Repair</div><h3>Days, not minutes</h3><p>Parts are in stock at Newegg, so most fixes take a day or two, followed by a restore from the backup drives.</p></li>
+        <li><div class="k">The machine is lost</div><h3>Backups go with it</h3><p>Fire, theft, a power surge or a failed controller can destroy the backups along with the server.</p></li>
+      </ol>
+      <div class="worst">
+        <div class="k">If approved anyway</div>
+        <p>Add a weekly off-site copy of the backups, to existing district storage or a rotated USB drive, so losing the machine does not mean losing the data.</p>
+      </div>
+      <div class="band-figure">
+        <img src="img/f_crash.jpg" alt="Animated scene: a dashed box labeled One machine holds both the failed server and its faded backup drives, with the caption Lose the machine, lose the backups." width="1100" height="544" loading="lazy">
+        <p>From the video: with the server and its backups in one box, a single loss takes both. Option 2 keeps the backups in a separate machine for $4,308 more.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">All three options</div>
+        <h2>How Option 3 compares</h2>
+        <p class="lede">The agents and AI models are the same in every option. What the extra money buys is protection: a mirrored fast drive, backups in a separate machine, and a path to automatic failover.</p>
+      </div>
+      <div class="table-scroll">
+        <table class="compare">
+          <thead><tr><th></th><th><a href="../top-tier/" target="_blank" rel="noopener">Top tier</a></th><th><a href="../option-2/" target="_blank" rel="noopener">Option 2</a></th><th class="hl">Option 3</th></tr></thead>
+          <tbody><tr><td>Machines</td><td>Two servers + backup/referee box</td><td>One server + backup box</td><td class="hl">One machine</td></tr><tr><td>A storage drive fails</td><td>No impact</td><td>No impact</td><td class="hl">No impact</td></tr><tr><td>The fast drive fails</td><td>No impact (mirrored)</td><td>No impact (mirrored)</td><td class="hl">Everything stops until replaced</td></tr><tr><td>A server fails</td><td>Twin takes over within minutes</td><td>Pauses until repaired, usually hours</td><td class="hl">Pauses until repaired, a day or more</td></tr><tr><td>The machine is lost</td><td>Nothing lost</td><td>Restore from the backup box</td><td class="hl">Backups lost without an off-site copy</td></tr><tr><td>Backups</td><td>Separate box, about 33 TB</td><td>Separate box, 12 TB mirrored</td><td class="hl">Same box, about 21 TB</td></tr><tr><td>Leadership agents and AI models</td><td>Same</td><td>Same</td><td class="hl">Same</td></tr><tr><td>Local AI add-on</td><td>Two cards, $3,399.98</td><td>Two cards, $3,399.98</td><td class="hl">Two cards, $3,399.98</td></tr><tr><td>Upgrade path</td><td>Already complete</td><td>Add a second server (~$6,500)</td><td class="hl">None; different platform</td></tr><tr><td>Recommendation</td><td>Best protection</td><td>Recommended minimum</td><td class="hl">Not recommended</td></tr>
+            <tr class="total"><td>One-time cost</td><td>$19,830.00</td><td>$10,498.87</td><td>$6,190.70</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">All new hardware</div>
+        <h2>The machine</h2>
+      </div>
+      <div class="grid-2">
+        <div class="machine"><h3>The one machine</h3><p>Runs the agents, the web apps and its own backups.</p><div class="spec">12-core AMD EPYC 4465P · 64 GB ECC memory · 1 × 2 TB NVMe (not mirrored) · 10GbE</div></div>
+        <div class="machine"><h3>Storage inside it</h3><p>Three 12 TB enterprise drives that survive one drive failure, with 9 empty bays for growth. A 1200 W power supply is ready for two AI cards.</p><div class="spec">3 × 12 TB SATA · about 21 TB usable · 12-bay 4U case</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="investment" style="padding-top: 0">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Prices re-checked October 13, 2026</div>
+        <h2>The investment</h2>
+      </div>
+      <div class="grid-2">
+        <div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>One-time cost</th><th class="r">Amount</th></tr></thead>
+              <tbody>
+                <tr><td>The machine</td><td class="r">$5,627.91</td></tr>
+                <tr><td>Cushion for price changes (10%)</td><td class="r">$562.79</td></tr>
+                <tr class="total"><td>Total request</td><td class="r">$6,190.70</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note">All prices checked October 13, 2026. Tax and most shipping are not included. Every part showed Add to cart at Newegg; nothing is special order.</p>
+          <div style="margin-top: 18px"><a class="btn btn-primary" href="purchase-list.html">Open the purchase list</a></div>
+        </div>
+        <div class="ongoing">
+          <div class="eyebrow">Ongoing costs</div>
+          <div><strong>AI usage pool</strong><span>One shared monthly budget covers the agents the group uses, with hard limits per agent or team. Expected to stay in the low hundreds of dollars a month for the whole group. For comparison, heavy daily use by one person currently runs under $60 a month with a subscription sign-in.</span></div>
+          <div><strong>Support subscription (optional)</strong><span>Proxmox support runs about €120–€370 per server per year. The software also runs free. The software also runs free.</span></div>
+          <div><strong>No AI hardware</strong><span>The AI models run in the cloud, so there are no graphics cards to buy now.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="paying" style="padding-top: 0">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Two ways to pay, and they can be combined</div>
+        <h2>Paying for AI usage</h2>
+        <p class="lede">Either way, the cost is one shared district budget for the agents the group uses, not a separate bill for every person.</p>
+      </div>
+      <div class="grid-2">
+        <div class="option">
+          <div class="tag">Option A · Pay as you go</div>
+          <h3>API credits</h3>
+          <p>The district prepays credits with each AI company: Anthropic for Claude, OpenAI for GPT, xAI for Grok. Every agent and app draws from that shared pool.</p>
+          <div class="sub">Strengths</div>
+          <ul><li>Works with every major model, including Claude</li><li>Hard dollar limits per agent, team or project</li><li>Usage reports show where the money goes</li></ul>
+          <div class="sub">Watch for</div>
+          <ul><li>Cost rises and falls with how much the agents work</li><li>Needs a monthly look at the usage report</li></ul>
+        </div>
+        <div class="option">
+          <div class="tag">Option B · Flat monthly fee</div>
+          <h3>Subscription sign-in</h3>
+          <p>A paid account such as ChatGPT or SuperGrok is linked to an agent by signing in with that account (OAuth). No API key is needed.</p>
+          <div class="sub">Strengths</div>
+          <ul><li>Fixed, predictable price per account</li><li>A usage allowance is included in the fee</li></ul>
+          <div class="sub">Watch for</div>
+          <ul><li>Allowances can run out before the month ends</li><li>Accounts are meant for one person, so sharing one across a group may break the terms</li><li>Claude subscriptions can't be used this way; Anthropic limits them to its own apps</li></ul>
+        </div>
+      </div>
+      <div class="recommend">
+        <div class="eyebrow">Recommendation</div>
+        <p><strong>Start with a pooled API budget</strong> for shared agents and district apps. Add district-paid subscription accounts only for individual leaders whose own agents need heavy daily use, after checking each plan's terms.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" style="padding-block: 0">
+    <div class="wrap phase2">
+      <div>
+        <div class="eyebrow">Optional phase 2 · not in the request</div>
+        <h2>Local AI for sensitive data</h2>
+        <p>Two AI graphics cards fit this machine too, letting leaders run AI on student records without anything leaving the district, and move routine work off paid cloud models.</p>
+      </div>
+      <div class="amt num">$3,399.98</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Our recommendation</div>
+        <h2>Choose Option 2 or the top tier</h2>
+        <p class="lede">Option 3 is listed so the full range is clear. For $4,308 more, Option 2 adds a mirrored fast drive, a separate backup machine, and a path to automatic failover. The top tier adds automatic failover from day one.</p>
+      </div>
+      <div class="warn-links"><a class="btn btn-primary" href="../option-2/" target="_blank" rel="noopener">Option 2 · $10,498.87</a><a class="btn btn-ghost" href="../top-tier/" target="_blank" rel="noopener">Top tier · $19,830</a></div>
+      <div class="closing">
+        <div><div class="eyebrow">For reference</div><p style="font-size: 18px; font-weight: 600">Every Option 3 part, quantity, price and buy link in one list.</p></div>
+        <a class="btn btn-primary" href="purchase-list.html">Open the purchase list</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span>Prepared by Mike Vincent, Instructional Technology &amp; CTE Coordinator · JNPSD</span>
+    <span>Prices and availability checked October 13, 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
