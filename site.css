@@ -18,8 +18,6 @@
   --ok-soft: #DDF1E6;
   --warn: #9A5300;
   --warn-soft: #FCE9D4;
-  --bad: #B3261E;
-  --bad-soft: #FBE9E7;
   --f-display: 'Big Shoulders Display', 'Arial Narrow', 'Helvetica Neue', sans-serif;
   --f-body: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
   --f-mono: 'IBM Plex Mono', 'Courier New', monospace;
@@ -29,7 +27,7 @@
     --bg: #0F1419; --surface: #18202A; --ink: #E9EEF1; --ink-2: #A9B6C0; --rule: #2E3A46;
     --teal: #5FC0C5; --teal-soft: #15343A; --accent: #F59A3C; --on-accent: #12161C;
     --band: #0A0E13; --band-2: #1C252F; --band-ink: #FFFFFF; --band-muted: #B9C4CC; --band-label: #9FD3D6;
-    --ok: #6FD39D; --ok-soft: #15362A; --warn: #F5B26B; --warn-soft: #3A2814; --bad: #FF8A80; --bad-soft: #3A1714;
+    --ok: #6FD39D; --ok-soft: #15362A; --warn: #F5B26B; --warn-soft: #3A2814;
     color-scheme: dark;
   }
 }
@@ -37,7 +35,7 @@
   --bg: #0F1419; --surface: #18202A; --ink: #E9EEF1; --ink-2: #A9B6C0; --rule: #2E3A46;
   --teal: #5FC0C5; --teal-soft: #15343A; --accent: #F59A3C; --on-accent: #12161C;
   --band: #0A0E13; --band-2: #1C252F; --band-ink: #FFFFFF; --band-muted: #B9C4CC; --band-label: #9FD3D6;
-  --ok: #6FD39D; --ok-soft: #15362A; --warn: #F5B26B; --warn-soft: #3A2814; --bad: #FF8A80; --bad-soft: #3A1714;
+  --ok: #6FD39D; --ok-soft: #15362A; --warn: #F5B26B; --warn-soft: #3A2814;
   color-scheme: dark;
 }
 
